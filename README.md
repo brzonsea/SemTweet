@@ -34,23 +34,23 @@ launcher.py [-h] [-t test_data] [-g plot_type] [-b bag_of_words_type]
                    train classifier
 ```
 
-Different functionalities are available. Train data file and classifier name are the two mandatory arguments.<br />
-    1. Train and evaluate a model by cross validation on train data, with the classifier specified. Occurs if only train and classifier are specified.<br />
-    2. Train the model with specified classifier on train and test on test data, if -t is specified.<br />
-    3. Plot different statistics about the train dataset. Can plot class distribution, word distribution, best word features... if -g is specified.<br />
-    4. Predict a given string if -p is specified. If a .pkl file containing a trained model exists in path ('model.pkl' by default), the model is used to predict.<br />
+Different functionalities are available. Train data file and classifier name are the two mandatory arguments.<br /><br />
+    1. Train and evaluate a model by cross validation on train data, with the classifier specified. Occurs if only train and classifier are specified.<br /><br />
+    2. Train the model with specified classifier on train and test on test data, if -t is specified.<br /><br />
+    3. Plot different statistics about the train dataset. Can plot class distribution, word distribution, best word features... if -g is specified.<br /><br />
+    4. Predict a given string if -p is specified. If a .pkl file containing a trained model exists in path ('model.pkl' by default), the model is used to predict.<br /><br />
     Otherwise, a model is trained on train, and prediction for the sentence is given. In any case, no validation or scoring is done,
-    and test data is ignored is specified.<br />
+    and test data is ignored is specified.<br /><br />
     5. Find the most similar words to the one given in the train data, using doc2vec model, if -w is specified. If 'doc2vec.pkl' is found in path
-    then the pre trained model is loaded if possible.<br />
+    then the pre trained model is loaded if possible.<br /><br />
     6. It is possible to combine different arguments (plotting and predicting, plotting and scoring...). Though, when using -p,
-    term frenquency-based bag of words is automatically used. Moreover it is impossible to predict a given sentence and to score the model.<br />
+    term frenquency-based bag of words is automatically used. Moreover it is impossible to predict a given sentence and to score the model.<br /><br />
     7. "none" can be provided as a classifier, in such a case no model is trained and only if -p is specified a potential pre-trained model
-    is loaded and used on the provided sentence. Any scoring process has to retrain the model. Anytime a model is trained, it is saved on disk.<br />
+    is loaded and used on the provided sentence. Any scoring process has to retrain the model. Anytime a model is trained, it is saved on disk.<br /><br />
     8. Training may be long depending on the used classifier, because the feature extraction process is heavy. To avoid any bias in the cross validation process,
     the vocabulary creation, the feature extraction and concatenation needed to be included in a heavy pipeline with repetitive processes,
     so that only training data is always used. However, to choose the features one would like to use for classification, it can easily be changed
-    in the launcher file, putting the extractors desired :<br />
+    in the launcher file, putting the extractors desired :<br /><br />
     ```
     extractors = [bag_of_words_extractor, swn_extractor, sentiment140_extractor_uni, sentiment140_extractor_bi, custom_extractor,
                   anew_extractor,
