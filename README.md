@@ -1,7 +1,7 @@
 # SemTweet
 
-Sentiment Analysis of Twitter posts
-Project based on Task 4 from SemEval 2016 : Sentiment Analysis in Twitter.
+Sentiment Analysis of Twitter posts<br />
+Project based on Task 4 from SemEval 2016 : Sentiment Analysis in Twitter.<br />
 Subtasks A, B and C have been observed. The program is thus designed for those tasks but is easily adaptable to any text classification task.
 
 ## Getting Started
