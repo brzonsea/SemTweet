@@ -32,19 +32,17 @@ def plot_class_distribution(tweets, labels):
     :return: count by class
     """
     check_data_format(tweets, labels)
-    # if labels[0].isdigit():
-    #     labels.sort(key=int)
-    # labels_count = Counter(labels)
-    # else:
+
     labels_count = Counter(sorted(labels))
-    # labels_count = OrderedDict(sorted(labels_count.items()))
     classes = labels_count.keys()
     bar_x_locations = np.arange(len(classes))
 
+
     w=0.25
-    plt.bar(bar_x_locations, labels_count.values(), width=w, align = 'center', label = 'tweets')
+    bars = plt.bar(bar_x_locations, labels_count.values(), width=w, align = 'center', label = 'tweets')
     plt.xticks(bar_x_locations, classes)
-    plt.legend()
+    plt.ylabel('Number')
+    plt.title("Class distribution")
     plt.savefig(graph_path + 'class_distribution.png')
     plt.show()
     return labels_count
@@ -84,7 +82,7 @@ def plot_best_features(tweets, labels, columns=None, n=15, score_func=chi2, figs
             labels = list(sorted(set(labels)))
         fig, ax = plt.subplots(figsize=figsize)
         width = 0.25
-        ax.set_ylabel('Scores')
+        ax.set_ylabel('Counts')
         ax.set_title('Scores by word and sentiment')
         ax.set_xticks(indices)
         ax.set_xticklabels((x for x in counts.index))
@@ -142,8 +140,8 @@ def plot_word_distribution(tweets, labels, word):
         return "The word {0} is not in the vocabulary".format(word)
     word_index = vectorizer.vocabulary_[word]
     dataframe = convert_to_dataframe(X[:,word_index], labels, columns=[word])
-    # remove irrelevant topic that may be found in the dataset
 
+    # remove irrelevant label that may be found in the dataset
     if 'off topic' in set(labels):
         dataframe = dataframe[dataframe.label != 'off topic']
 

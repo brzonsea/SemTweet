@@ -13,8 +13,8 @@ sentiment140_bigrams = "../lexicons/bigrams-pmilexicon.txt"
 compiled_lexicon = "../lexicons/compiled.csv"
 AFINN_lexicon = "../lexicons/AFINN.txt"
 AFINN_emoticons = "../lexicons/AFINN_emoticons.txt"
-# Transformators used to extract features using different sentiment lexicons
 
+# Transformators used to extract features using different sentiment lexicons
 class SentiWordNet_Extractor(BaseEstimator, TransformerMixin):
     """
     Extract features from a text dataset based on SentiWordNet lexicon recensing score of words (neg, obj, pos)
@@ -104,7 +104,6 @@ class BingLiuExtractor(BaseEstimator, TransformerMixin):
 
 from itertools import tee
 def pairwise(iterable):
-    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
     a, b = tee(iterable)
     next(b, None)
     return zip(a, b)
@@ -415,13 +414,14 @@ class ANEWPredictor:
                     neg += 1
                 else:
                     neu += 1
-            max_index = np.argmax([neg, neu, pos])
+            if len(set(y)) == 3 or len(set(y)) == 5:
+                max_index = np.argmax([neg, neu, pos])
+            else:
+                max_index = np.argmax([neg, pos])
             if len(lab)==5:
                 labels.append(lab[max_index+1])
-            elif len(lab) == 3:
-                labels.append(lab[max_index])
             else:
-                raise ValueError('lexicon can only be used on data that have either 3 or 5 classes')
+                labels.append(lab[max_index])
 
         return labels
 

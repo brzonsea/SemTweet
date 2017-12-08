@@ -25,8 +25,8 @@ class Word2VecProvider(object):
     def get_vector(self, word):
         """
         Get the vector associated to a given word. None if the word is not in vocabulary.
-        :param word:
-        :return:
+        :param word: word to get the vector
+        :return: vector if word in vocab
         """
         if word not in self.word2vec.vocab:
             return None
@@ -35,9 +35,9 @@ class Word2VecProvider(object):
     def get_similarity(self, word1, word2):
         """
         Get the cosine similarity between two words. None if one of them not in the vocabulary.
-        :param word1:
-        :param word2:
-        :return:
+        :param word1: first word
+        :param word2: second word
+        :return: similarity score
         """
         if word1 not in self.word2vec.vocab or word2 not in self.word2vec.vocab:
             return None

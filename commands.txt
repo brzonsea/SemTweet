@@ -1,0 +1,8 @@
+python launcher.py ..\data\semeval_train_B.txt logistic_regression -t ..\data\semeval_test_B.txt -b tfidf
+python launcher.py ..\data\semeval_train_B.txt logistic_regression -p "Text mining is amazing"
+python launcher.py ..\data\semeval_train_B.txt logistic_regression -p "Text mining is great but sometimes really difficult and boring"
+python launcher.py ..\data\semeval_train_A.txt none -g '$all$'
+python launcher.py ..\data\semeval_train_A.txt none -g '$classes$'
+python launcher.py ..\data\semeval_train_A.txt none -g 'parenthood'
+python launcher.py ..\data\semeval_train_A.txt none -g 'trump'
+python launcher.py ..\data\semeval_train_A.txt none -w 'trump'

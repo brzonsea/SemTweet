@@ -1,63 +1,61 @@
 import sys
 sys.path.append('../')
 
-from src.processing import *
 import argparse
 from time import time
 from src.gridsearchhelper import *
-from sklearn.pipeline import Pipeline
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import make_scorer, f1_score
-import pickle
+from src.lexicons import *
+
 
 choices = ['svm', 'logistic_regression',
            'knn',
            'naive_bayes_bernoulli', 'naive_bayes_binomial',
-           # 'neural_network'
+           'neural_network'
            ]
-vectorizer = CountVectorizer(binary=True, ngram_range=(1, 1),
-                          tokenizer=tokenize,
-                           lowercase=True)
+vectorizer = TfidfVectorizer(binary=False, ngram_range=(1, 1),
+                                             tokenizer=lambda text: preprocess(text, word_transformation='',
+                                                                               lowercase=True)
+                             )
 
-# svc = Pipeline([('vectorizer', vectorizer), ('svm', SVC(C=0.1, kernel='linear'))])
-# logistic_regression = Pipeline([('vectorizer', vectorizer), ('logistic_regression', LogisticRegression())])
-# knn = Pipeline([('vectorizer', vectorizer), ('knn', KNeighborsClassifier())])
-# naive_bayes_bernoulli = Pipeline([('vectorizer', vectorizer), ('naive_bayes_bernoulli', BernoulliNB())])
-# naive_bayes_binomial = Pipeline([('vectorizer', vectorizer), ('naive_bayes_binomial', MultinomialNB())])
-# neural_network = Pipeline([('vectorizer', vectorizer), ('neural_network', MLPClassifier())])
-# classifiers = [
-#     svc, logistic_regression, knn, naive_bayes_bernoulli, naive_bayes_binomial, neural_network
-# ]
 
-classifiers = [SVC(), LogisticRegression(),
+
+
+classifiers = [
+    SVC(),
+    LogisticRegression(),
                KNeighborsClassifier(),
                BernoulliNB(), MultinomialNB(),
-               # MLPClassifier(max_iter=300)
+               MLPClassifier(max_iter=350)
                ]
 
 classifiers = dict(zip(choices, classifiers))
 
 params = [
 
-    # {'ngram_range': [(1,1), (1,2), (1,3), (2,2)]},
+    {'ngram_range': [(1,1), (1,2), (1,3), (2,2)]},
     [
-        {'kernel': ['linear'], 'C': [1, 10]},
-        {'kernel': ['rbf'], 'C': [1, 10], 'gamma': [0.001, 0.0001]},
+        {'kernel': ['linear'], 'C': [0.1, 1, 10, 100]},
+        {'kernel': ['rbf'], 'C': [0.1, 1, 10, 100], 'gamma': [0.001, 0.0001]},
     ],
     {'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000]},
-    {'n_neighbors': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+    {'n_neighbors': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]},
     {'alpha': [0, 0.5, 1, 2]},
     {'alpha': [0, 0.5, 1, 2]},
-    # {'hidden_layer_sizes': [(10), (100), (500), (1000)]}
+    {'hidden_layer_sizes': [
+        (10), (100),
+        (500), (1000), (5000)
+    ]}
 ]
 params = dict(zip(choices, params))
-print(params)
-print(classifiers)
+# print(params)
+# print(classifiers)
 
 # def main(arguments):
 
@@ -80,14 +78,7 @@ if __name__ == '__main__':
     helper = EstimatorSelectionHelper(classifiers, params)
     my_func = make_scorer(f1_average, greater_is_better=True)
     helper.fit(X, np.array(train_labels), scoring=my_func, n_jobs=-1)
-    # print(KNeighborsClassifier().fit(X[:5,:], train_labels[:5]).predict(X[:5,:]))
 
-    # knn = KNeighborsClassifier(algorithm='brute')
-    # clf = GridSearchCV(knn, params['knn'], cv=2)
-    # clf.fit(X[:15,:], np.array(train_labels[:15])[:,np.newaxis])
-    # print(clf.best_params_)
     helper.score_summary(sort_by='min_score').to_pickle('gridresult.pkl')
     print(helper.score_summary(sort_by='min_score'))
 
-# if __name__ == '__main__':
-#     sys.exit(main(sys.argv[1:]))

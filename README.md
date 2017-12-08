@@ -13,7 +13,7 @@ Two file are executable as main :<br />
 ### Prerequisites
 
 Make sure to have scikit-learn, numpy, scipy, nltk, matplotlib, pandas (latest versions) and Python 3+.<br />
-
+File format must be either ```text<tab>label``` (subtask A) or ```text<tab>topic<tab>label```
 
 ### Usage
 
@@ -43,10 +43,10 @@ Different functionalities are available. Train data file and classifier name are
     and test data is ignored is specified.<br /><br />
     5. Find the most similar words to the one given in the train data, using doc2vec model, if -w is specified. If 'doc2vec.pkl' is found in path
     then the pre trained model is loaded if possible.<br /><br />
-    6. It is possible to combine different arguments (plotting and predicting, plotting and scoring...). Though, when using -p,
+    6. It is possible to combine different arguments (plotting and predicting, plotting and scoring...). Though, when using -g,
     term frenquency-based bag of words is automatically used. Moreover it is impossible to predict a given sentence and to score the model.<br /><br />
     7. "none" can be provided as a classifier, in such a case no model is trained and only if -p is specified a potential pre-trained model
-    is loaded and used on the provided sentence. Any scoring process has to retrain the model. Anytime a model is trained, it is saved on disk.<br /><br />
+    is loaded and used on the provided sentence. Any scoring process has to retrain the model. Anytime a model is trained (not cross validation), it is saved on disk.<br /><br />
     8. Training may be long depending on the used classifier, because the feature extraction process is heavy. To avoid any bias in the cross validation process,
     the vocabulary creation, the feature extraction and concatenation needed to be included in a heavy pipeline with repetitive processes,
     so that only training data is always used. However, to choose the features one would like to use for classification, it can easily be changed

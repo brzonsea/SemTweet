@@ -14,7 +14,7 @@ from time import time
 from src.lexicons import *
 from src.embeddings import *
 
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
@@ -22,18 +22,19 @@ from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 from sklearn.neural_network import MLPClassifier
 from sklearn.dummy import DummyClassifier
 from src.statistics import *
-from sklearn.feature_selection import SelectPercentile
+from sklearn.ensemble import RandomForestClassifier
 
 
 classifier_choices = ['svm', 'logistic_regression', 'knn', 'naive_bayes_bernoulli', 'naive_bayes_binomial', 'neural_network',
-               'most_frequent', 'stratified', 'random', 'lexicon', "none"]
-classifiers = [SVC(C=0.1, kernel='linear', class_weight='balanced'), LogisticRegression(class_weight='balanced', C=10), KNeighborsClassifier(), BernoulliNB(), MultinomialNB(),
-               MLPClassifier(), DummyClassifier(strategy='most_frequent'), DummyClassifier(strategy='stratified'),
+               'tree', 'most_frequent', 'stratified', 'random', 'lexicon', "none"]
+classifiers = [SVC(kernel='linear', class_weight='balanced', C=100), LogisticRegression(C=1000, class_weight='balanced'), KNeighborsClassifier(), BernoulliNB(), MultinomialNB(),
+               MLPClassifier(), RandomForestClassifier(), DummyClassifier(strategy='most_frequent'),
+               DummyClassifier(strategy='stratified'),
                DummyClassifier(strategy='uniform'), ANEWPredictor(), None]
 classifiers = dict(zip(classifier_choices, classifiers))
 
 plot_choices = ['chosen word', '$all$', '$classes$']
-bag_of_words_choices = ['count', 'binary']
+bag_of_words_choices = ['count', 'binary', 'tfidf']
 
 preprocessor = lambda text: preprocess(text, word_transformation='', lowercase=True)
 
@@ -99,30 +100,51 @@ If 'doc2vec.pkl' file is found in path, model is just loaded""", metavar='word_t
         if isinstance(result, str):
             print(result)
     if bag_type == 'count':
-        bag_of_words_extractor = CountVectorizer(binary=False, ngram_range=(1, 1),
+        bag_of_words_extractor = CountVectorizer(binary=False, ngram_range=(1, 3),
+                                             tokenizer=lambda text: preprocess(text, word_transformation='',
+                                                                               lowercase=True),
+                                             lowercase=True)
+    elif bag_type == 'tfidf':
+        bag_of_words_extractor = TfidfVectorizer(binary=False, ngram_range=(1, 3),
                                              tokenizer=lambda text: preprocess(text, word_transformation='',
                                                                                lowercase=True),
                                              lowercase=True)
     else:
-        bag_of_words_extractor = CountVectorizer(binary=True, ngram_range=(1, 1),
+        bag_of_words_extractor = CountVectorizer(binary=True, ngram_range=(1, 3),
                                                  tokenizer=lambda text: preprocess(text, word_transformation='',
                                                                                    lowercase=True),
                                                  lowercase=True)
 
-    char_extractor = CountVectorizer(binary=True, ngram_range=(1, 5),
+    binary = CountVectorizer(binary=True, ngram_range=(1, 3),
                                                  tokenizer=lambda text: preprocess(text, word_transformation='',
                                                                                    lowercase=True),
-                                                 lowercase=True, analyzer='char')
+                                                 lowercase=True)
+    count = CountVectorizer(binary=False, ngram_range=(1, 3),
+                             tokenizer=lambda text: preprocess(text, word_transformation='',
+                                                               lowercase=True),
+                             lowercase=True)
+    tfidf = TfidfVectorizer(binary=False, ngram_range=(1, 3),
+                                             tokenizer=lambda text: preprocess(text, word_transformation='',
+                                                                               lowercase=True),
+                                             lowercase=True)
 
-    # define features list
+    # define features list with the chosen bag of words
     extractors = [bag_of_words_extractor, swn_extractor, sentiment140_extractor_uni, sentiment140_extractor_bi, custom_extractor,
                   anew_extractor,
                   compiled_lexicon_extractor, bingliu_extractor, afinn_extractor]
-    extractors = [bag_of_words_extractor, anew_extractor, custom_extractor]
+    # enable this line to only use bag of words
+    # extractors = [bag_of_words_extractor]
+
+    # this our best feature set. Comment it to enable the bag of words choice in command line.
+    extractors = [count, binary, tfidf, swn_extractor, sentiment140_extractor_uni,
+                  sentiment140_extractor_bi, custom_extractor,
+                  anew_extractor,
+                  compiled_lexicon_extractor, bingliu_extractor, afinn_extractor]
 
     if classifier in ['naive_bayes_bernoulli', 'naive_bayes_binomial']:
         extractors.remove(swn_extractor)
         extractors.remove(afinn_extractor)
+
     # get chosen classifier
     estimator = classifiers[classifier]
     print("Classifier : {}".format(classifier))
@@ -136,7 +158,7 @@ If 'doc2vec.pkl' file is found in path, model is just loaded""", metavar='word_t
         except KeyError:
             print("Your word is not in the corpus")
     print("\n")
-    if estimator or predict_sentence:
+    if not estimator==None or predict_sentence:
         # create the features union and the pipeline
         features = create_feature_unions(extractors)
         pipeline = create_pipeline(features, estimator)
@@ -208,5 +230,9 @@ If 'doc2vec.pkl' file is found in path, model is just loaded""", metavar='word_t
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
+
+
+
+
 
 
